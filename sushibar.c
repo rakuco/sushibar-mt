@@ -38,9 +38,9 @@ void sushibar_free(SushiBar *sushi)
     if (pthread_mutex_destroy(sushi->mutex))
       perror("sushibar_free (data mutex)");
 
+    free(sushi->block);
+    free(sushi->mutex);
     free(sushi);
-    sushi->block = 0;
-    sushi->mutex = 0;
   }
 }
 
@@ -52,6 +52,8 @@ SushiBar *sushibar_new(void)
   ret->eating = 0;
   ret->waiting = 0;
   ret->must_wait = 0;
+  ret->mutex = MEM_ALLOC(pthread_mutex_t);
+  ret->block = MEM_ALLOC(pthread_mutex_t);
 
   if (pthread_mutex_init(ret->mutex, NULL)) {
     perror("sushibar_new (data mutex)");
