@@ -42,4 +42,6 @@ void sushibar_free(SushiBar *sushi);
 
 SushiBar *sushibar_new(void);
 
+void *sushibar_run(void *data);
+
 #endif

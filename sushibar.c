@@ -26,6 +26,7 @@
 #include "sushibar.h"
 #include "mem.h"
 
+#include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,4 +74,46 @@ SushiBar *sushibar_new(void)
   }
 
   return ret;
+}
+
+void *sushibar_run(void *data)
+{
+  SushiBar *sushi = (SushiBar*)data;
+
+  assert(sushi);
+  assert(sushi->block);
+  assert(sushi->mutex);
+
+  pthread_mutex_lock(sushi->mutex);
+
+  if (sushi->must_wait) {
+    sushi->waiting++;
+    pthread_mutex_unlock(sushi->mutex);
+    pthread_mutex_lock(sushi->block);
+    sushi->waiting--;
+  }
+
+  sushi->eating++;
+  sushi->must_wait = (sushi->eating == 5);
+
+  if ((sushi->waiting) && (!sushi->must_wait))
+    pthread_mutex_unlock(sushi->block);
+  else
+    pthread_mutex_unlock(sushi->mutex);
+
+  /* eat sushi */
+  printf("Ich esse sushi!\n");
+
+  pthread_mutex_lock(sushi->mutex);
+  sushi->eating--;
+
+  if (sushi->eating == 0)
+    sushi->must_wait = 0;
+
+  if ((sushi->waiting) && (!sushi->must_wait))
+    pthread_mutex_unlock(sushi->block);
+  else
+    pthread_mutex_unlock(sushi->mutex);
+
+  return NULL;
 }
