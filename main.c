@@ -23,9 +23,50 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "mem.h"
+#include "slist.h"
+#include "sushibar.h"
+
+#include <pthread.h>
 #include <stdio.h>
+
+#define N 7
+
+static void join_threads(void *data)
+{
+  pthread_t *thread = (pthread_t*)data;
+
+  /* TODO: some error checking would be nice */
+  pthread_join(*thread, NULL);
+}
+
+static void linked_list_node_destructor(void *data)
+{
+  free(data);
+}
 
 int main(int argc, char *argv[])
 {
+  size_t i;
+  pthread_t *tid;
+  LinkedList *thread_list;
+  SushiBar *sushi;
+
+  sushi = sushibar_new();
+  thread_list = linked_list_new(linked_list_node_destructor);
+
+  for (i = 0; i < N; ++i) {
+    tid = MEM_ALLOC(pthread_t);
+    linked_list_append(thread_list, tid);
+
+    /* TODO: error checking? */
+    pthread_create(tid, NULL, sushibar_run, sushi);
+  }
+
+  linked_list_foreach(thread_list, join_threads);
+
+  linked_list_free(thread_list);
+  sushibar_free(sushi);
+
   return 0;
 }
