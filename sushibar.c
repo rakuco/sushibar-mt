@@ -30,14 +30,18 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void sushibar_free(SushiBar *sushi)
 {
+  int err;
+
   if (sushi) {
-    if (pthread_mutex_destroy(sushi->block))
-      perror("sushibar_free (block mutex)");
-    if (pthread_mutex_destroy(sushi->mutex))
-      perror("sushibar_free (data mutex)");
+    if ((err = pthread_mutex_destroy(sushi->block)))
+      fprintf(stderr, "sushibar_free (block mutex): %s\n", strerror(err));
+
+    if ((err = pthread_mutex_destroy(sushi->mutex)))
+      fprintf(stderr, "sushibar_free (data mutex): %s\n", strerror(err));
 
     free(sushi->block);
     free(sushi->mutex);
@@ -47,6 +51,7 @@ void sushibar_free(SushiBar *sushi)
 
 SushiBar *sushibar_new(void)
 {
+  int err;
   SushiBar *ret;
 
   ret = MEM_ALLOC(SushiBar);
@@ -56,16 +61,16 @@ SushiBar *sushibar_new(void)
   ret->mutex = MEM_ALLOC(pthread_mutex_t);
   ret->block = MEM_ALLOC(pthread_mutex_t);
 
-  if (pthread_mutex_init(ret->mutex, NULL)) {
-    perror("sushibar_new (data mutex)");
+  if ((err = pthread_mutex_init(ret->mutex, NULL))) {
+    fprintf(stderr, "sushibar_new (data mutex): %s\n", strerror(err));
 
     free(ret);
 
     exit(1);
   }
 
-  if (pthread_mutex_init(ret->block, NULL)) {
-    perror("sushibar_new (block mutex)");
+  if ((err = pthread_mutex_init(ret->block, NULL))) {
+    fprintf(stderr, "sushibar_new (block mutex): %s\n", strerror(err));
 
     pthread_mutex_destroy(ret->mutex);
     free(ret);
