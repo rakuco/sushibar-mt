@@ -26,6 +26,7 @@
 #ifndef SUSHIBAR_H
 #define SUSHIBAR_H
 
+#include <stdlib.h>
 #include <semaphore.h>
 
 typedef struct {
