@@ -39,9 +39,8 @@ void sushibar_free(SushiBar *sushi)
   int err;
 
   if (sushi) {
-    /*if ((err = pthread_mutex_destroy(sushi->block)))*/
-    if ((err = sem_destroy(sushi->block)))
-      fprintf(stderr, "sushibar_free (block mutex): %s\n", strerror(errno));
+    if (sem_destroy(sushi->block))
+      perror("sushibar_free (block semaphore)");
 
     if ((err = pthread_mutex_destroy(sushi->mutex)))
       fprintf(stderr, "sushibar_free (data mutex): %s\n", strerror(err));
@@ -62,7 +61,6 @@ SushiBar *sushibar_new(void)
   ret->waiting = 0;
   ret->must_wait = 0;
   ret->mutex = MEM_ALLOC(pthread_mutex_t);
-  /*ret->block = MEM_ALLOC(pthread_mutex_t);*/
   ret->block = MEM_ALLOC(sem_t);
 
   if ((err = pthread_mutex_init(ret->mutex, NULL))) {
@@ -73,9 +71,8 @@ SushiBar *sushibar_new(void)
     exit(1);
   }
 
-  /*if ((err = pthread_mutex_init(ret->block, NULL))) {*/
-  if ((err = sem_init(ret->block, 0, 0))) {
-    fprintf(stderr, "sushibar_new (block mutex): %s\n", strerror(errno));
+  if (sem_init(ret->block, 0, 0)) {
+    perror("sushibar_new (block semaphore)");
 
     pthread_mutex_destroy(ret->mutex);
     free(ret);

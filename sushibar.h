@@ -37,7 +37,6 @@ typedef struct {
 
   pthread_mutex_t *mutex;
   sem_t *block;
-  /*pthread_mutex_t *block;*/
 } SushiBar;
 
 void sushibar_free(SushiBar *sushi);
