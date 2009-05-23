@@ -27,6 +27,7 @@
 #define SUSHIBAR_H
 
 #include <pthread.h>
+#include <semaphore.h>
 
 typedef struct {
   size_t eating;
@@ -35,7 +36,8 @@ typedef struct {
   char   must_wait;
 
   pthread_mutex_t *mutex;
-  pthread_mutex_t *block;
+  sem_t *block;
+  /*pthread_mutex_t *block;*/
 } SushiBar;
 
 void sushibar_free(SushiBar *sushi);
