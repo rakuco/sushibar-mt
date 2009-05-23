@@ -106,7 +106,8 @@ void *sushibar_run(void *data)
   sem_wait(sushi->mutex);
   sushi->eating--;
 
-  sushi->must_wait = (sushi->eating != 0);
+  if (sushi->eating == 0)
+    sushi->must_wait = 0;
 
   if ((sushi->waiting) && (!sushi->must_wait))
     sem_post(sushi->block);
