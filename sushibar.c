@@ -28,7 +28,6 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <pthread.h>
 #include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,14 +35,12 @@
 
 void sushibar_free(SushiBar *sushi)
 {
-  int err;
-
   if (sushi) {
     if (sem_destroy(sushi->block))
       perror("sushibar_free (block semaphore)");
 
-    if ((err = pthread_mutex_destroy(sushi->mutex)))
-      fprintf(stderr, "sushibar_free (data mutex): %s\n", strerror(err));
+    if (sem_destroy(sushi->mutex))
+      perror("sushibar_free (mutex semaphore)");
 
     free(sushi->block);
     free(sushi->mutex);
@@ -53,30 +50,25 @@ void sushibar_free(SushiBar *sushi)
 
 SushiBar *sushibar_new(void)
 {
-  int err;
   SushiBar *ret;
 
   ret = MEM_ALLOC(SushiBar);
   ret->eating = 0;
   ret->waiting = 0;
   ret->must_wait = 0;
-  ret->mutex = MEM_ALLOC(pthread_mutex_t);
+  ret->mutex = MEM_ALLOC(sem_t);
   ret->block = MEM_ALLOC(sem_t);
 
-  if ((err = pthread_mutex_init(ret->mutex, NULL))) {
-    fprintf(stderr, "sushibar_new (data mutex): %s\n", strerror(err));
-
+  if (sem_init(ret->mutex, 0, 1)) {
+    perror("sushibar_new (mutex semaphore)");
     free(ret);
-
     exit(1);
   }
 
   if (sem_init(ret->block, 0, 0)) {
     perror("sushibar_new (block semaphore)");
-
-    pthread_mutex_destroy(ret->mutex);
+    sem_destroy(ret->mutex);
     free(ret);
-
     exit(1);
   }
 
@@ -91,11 +83,11 @@ void *sushibar_run(void *data)
   assert(sushi->block);
   assert(sushi->mutex);
 
-  pthread_mutex_lock(sushi->mutex);
+  sem_wait(sushi->mutex);
 
   if (sushi->must_wait) {
     sushi->waiting++;
-    pthread_mutex_unlock(sushi->mutex);
+    sem_post(sushi->mutex);
     sem_wait(sushi->block);
     sushi->waiting--;
   }
@@ -106,12 +98,12 @@ void *sushibar_run(void *data)
   if ((sushi->waiting) && (!sushi->must_wait))
     sem_post(sushi->block);
   else
-    pthread_mutex_unlock(sushi->mutex);
+    sem_post(sushi->mutex);
 
   /* eat sushi */
   printf("Ich esse sushi!\n");
 
-  pthread_mutex_lock(sushi->mutex);
+  sem_wait(sushi->mutex);
   sushi->eating--;
 
   if (sushi->eating == 0)
@@ -120,7 +112,7 @@ void *sushibar_run(void *data)
   if ((sushi->waiting) && (!sushi->must_wait))
     sem_post(sushi->block);
   else
-    pthread_mutex_unlock(sushi->mutex);
+    sem_post(sushi->mutex);
 
   return NULL;
 }

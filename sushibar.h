@@ -35,7 +35,7 @@ typedef struct {
 
   char   must_wait;
 
-  pthread_mutex_t *mutex;
+  sem_t *mutex;
   sem_t *block;
 } SushiBar;
 
