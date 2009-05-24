@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 void sushibar_free(SushiBar *sushi)
 {
@@ -83,6 +84,8 @@ void *sushibar_run(void *data)
   assert(sushi->block);
   assert(sushi->mutex);
 
+  printf("Creating thread...\n");
+
   sem_wait(sushi->mutex);
 
   if (sushi->must_wait) {
@@ -102,6 +105,7 @@ void *sushibar_run(void *data)
 
   /* eat sushi */
   printf("Eating sushi. Eaters: %u. Waiting: %u.\n", sushi->eating, sushi->waiting);
+  sleep(1);
 
   sem_wait(sushi->mutex);
   sushi->eating--;
@@ -113,6 +117,8 @@ void *sushibar_run(void *data)
     sem_post(sushi->block);
   else
     sem_post(sushi->mutex);
+
+  printf("Thread finished...\n");
 
   return NULL;
 }
