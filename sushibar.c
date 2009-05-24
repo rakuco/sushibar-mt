@@ -101,7 +101,7 @@ void *sushibar_run(void *data)
     sem_post(sushi->mutex);
 
   /* eat sushi */
-  printf("Ich esse sushi!\n");
+  printf("Eating sushi. Eaters: %u. Waiting: %u.\n", sushi->eating, sushi->waiting);
 
   sem_wait(sushi->mutex);
   sushi->eating--;
