@@ -26,8 +26,8 @@
 #ifndef SUSHIBAR_H
 #define SUSHIBAR_H
 
-#include <stdlib.h>
 #include <semaphore.h>
+#include <stdlib.h>
 
 typedef struct {
   size_t eating;
