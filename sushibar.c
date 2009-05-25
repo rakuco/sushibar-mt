@@ -85,9 +85,12 @@ void *sushibar_run(void *data)
   assert(sushi->block);
   assert(sushi->mutex);
 
+  printf("%02u: Entering the main function.\n", id);
+
   sem_wait(sushi->mutex);
 
-  /*printf("%02u: Creating thread...\n", id);*/
+  printf("%02u: Creating thread.\n", id);
+  sleep(1);
 
   if (sushi->must_wait) {
     sushi->waiting++;
@@ -97,6 +100,7 @@ void *sushibar_run(void *data)
   }
 
   sushi->eating++;
+  printf("%02u: One more eater!\n", id);
   sushi->must_wait = (sushi->eating == 5);
 
   if ((sushi->waiting) && (!sushi->must_wait))
@@ -106,13 +110,9 @@ void *sushibar_run(void *data)
 
   /* eat sushi */
   printf("%02u: Eating sushi. Eaters: %u. Waiting: %u.\n", id, sushi->eating, sushi->waiting);
-  sleep(1);
-  /*printf("%02u: bla!\n", id);*/
 
   sem_wait(sushi->mutex);
   sushi->eating--;
-
-  /*printf("%02u: Finished eating...\n", id);*/
 
   if (sushi->eating == 0)
     sushi->must_wait = 0;
@@ -121,6 +121,9 @@ void *sushibar_run(void *data)
     sem_post(sushi->block);
   else
     sem_post(sushi->mutex);
+
+  printf("%02u: Finished eating.\n", id);
+  sleep(1);
 
   return NULL;
 }
