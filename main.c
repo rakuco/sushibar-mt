@@ -24,7 +24,6 @@
  */
 
 #include "mem.h"
-#include "slist.h"
 #include "sushibar.h"
 
 #include <pthread.h>
@@ -33,45 +32,24 @@
 
 #define N 5
 
-static void join_threads(void *data)
-{
-  pthread_t *thread = (pthread_t*)data;
-
-  /* TODO: some error checking would be nice */
-  pthread_join(*thread, NULL);
-}
-
-static void linked_list_node_destructor(void *data)
-{
-  free(data);
-}
-
 int main(int argc, char *argv[])
 {
   size_t i;
-  pthread_t *tid;
-  LinkedList *thread_list;
   SushiBar *sushi;
   ThreadInformation thr[N];
 
   sushi = sushibar_new();
-  thread_list = linked_list_new(linked_list_node_destructor);
 
   for (i = 0; i < N; ++i) {
-    tid = MEM_ALLOC(pthread_t);
-    linked_list_append(thread_list, tid);
-
-    thr[i].bar = sushi;
-    thr[i].thread_id = i;
-
-    /* TODO: error checking? */
-    pthread_create(tid, NULL, sushibar_run, &thr[i]);
+    thr[i].id = i;
+    thr[i].sushibar = sushi;
+    pthread_create(&thr[i].thread, NULL, sushibar_run, &thr[i]);
   }
 
-  linked_list_foreach(thread_list, join_threads);
+  for (i = 0; i < N; ++i) {
+    pthread_join(thr[i].thread, NULL);
+  }
 
-  linked_list_free(thread_list);
   sushibar_free(sushi);
-
   return 0;
 }

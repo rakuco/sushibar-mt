@@ -26,6 +26,7 @@
 #ifndef SUSHIBAR_H
 #define SUSHIBAR_H
 
+#include <pthread.h>
 #include <semaphore.h>
 #include <stdlib.h>
 
@@ -40,8 +41,9 @@ typedef struct {
 } SushiBar;
 
 typedef struct {
-  SushiBar *bar;
-  size_t thread_id;
+  size_t id;
+  SushiBar *sushibar;
+  pthread_t thread;
 } ThreadInformation;
 
 void sushibar_free(SushiBar *sushi);
