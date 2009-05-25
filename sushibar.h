@@ -30,14 +30,19 @@
 #include <stdlib.h>
 
 typedef struct {
-  size_t eating;
-  size_t waiting;
+  volatile size_t eating;
+  volatile size_t waiting;
 
   char   must_wait;
 
   sem_t *mutex;
   sem_t *block;
 } SushiBar;
+
+typedef struct {
+  SushiBar *bar;
+  size_t id;
+} Foo;
 
 void sushibar_free(SushiBar *sushi);
 

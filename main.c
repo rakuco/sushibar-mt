@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 7
+#define N 5
 
 static void join_threads(void *data)
 {
@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
   pthread_t *tid;
   LinkedList *thread_list;
   SushiBar *sushi;
+  Foo f[N];
 
   sushi = sushibar_new();
   thread_list = linked_list_new(linked_list_node_destructor);
@@ -60,8 +61,11 @@ int main(int argc, char *argv[])
     tid = MEM_ALLOC(pthread_t);
     linked_list_append(thread_list, tid);
 
+    f[i].bar = sushi;
+    f[i].id = i;
+
     /* TODO: error checking? */
-    pthread_create(tid, NULL, sushibar_run, sushi);
+    pthread_create(tid, NULL, sushibar_run, &f[i]);
   }
 
   linked_list_foreach(thread_list, join_threads);

@@ -78,15 +78,16 @@ SushiBar *sushibar_new(void)
 
 void *sushibar_run(void *data)
 {
-  SushiBar *sushi = (SushiBar*)data;
+  SushiBar *sushi = (SushiBar*)((Foo*)data)->bar;
+  size_t id = (size_t)((Foo*)data)->id;
 
   assert(sushi);
   assert(sushi->block);
   assert(sushi->mutex);
 
-  printf("Creating thread...\n");
-
   sem_wait(sushi->mutex);
+
+  /*printf("%02u: Creating thread...\n", id);*/
 
   if (sushi->must_wait) {
     sushi->waiting++;
@@ -104,11 +105,14 @@ void *sushibar_run(void *data)
     sem_post(sushi->mutex);
 
   /* eat sushi */
-  printf("Eating sushi. Eaters: %u. Waiting: %u.\n", sushi->eating, sushi->waiting);
+  printf("%02u: Eating sushi. Eaters: %u. Waiting: %u.\n", id, sushi->eating, sushi->waiting);
   sleep(1);
+  /*printf("%02u: bla!\n", id);*/
 
   sem_wait(sushi->mutex);
   sushi->eating--;
+
+  /*printf("%02u: Finished eating...\n", id);*/
 
   if (sushi->eating == 0)
     sushi->must_wait = 0;
@@ -117,8 +121,6 @@ void *sushibar_run(void *data)
     sem_post(sushi->block);
   else
     sem_post(sushi->mutex);
-
-  printf("Thread finished...\n");
 
   return NULL;
 }
