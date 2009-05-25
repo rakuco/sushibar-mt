@@ -41,8 +41,8 @@ typedef struct {
 
 typedef struct {
   SushiBar *bar;
-  size_t id;
-} Foo;
+  size_t thread_id;
+} ThreadInformation;
 
 void sushibar_free(SushiBar *sushi);
 

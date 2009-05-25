@@ -78,8 +78,8 @@ SushiBar *sushibar_new(void)
 
 void *sushibar_run(void *data)
 {
-  SushiBar *sushi = (SushiBar*)((Foo*)data)->bar;
-  size_t id = (size_t)((Foo*)data)->id;
+  SushiBar *sushi = (SushiBar*)((ThreadInformation*)data)->bar;
+  size_t id = (size_t)((ThreadInformation*)data)->thread_id;
 
   assert(sushi);
   assert(sushi->block);

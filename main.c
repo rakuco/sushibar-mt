@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
   pthread_t *tid;
   LinkedList *thread_list;
   SushiBar *sushi;
-  Foo f[N];
+  ThreadInformation thr[N];
 
   sushi = sushibar_new();
   thread_list = linked_list_new(linked_list_node_destructor);
@@ -61,11 +61,11 @@ int main(int argc, char *argv[])
     tid = MEM_ALLOC(pthread_t);
     linked_list_append(thread_list, tid);
 
-    f[i].bar = sushi;
-    f[i].id = i;
+    thr[i].bar = sushi;
+    thr[i].thread_id = i;
 
     /* TODO: error checking? */
-    pthread_create(tid, NULL, sushibar_run, &f[i]);
+    pthread_create(tid, NULL, sushibar_run, &thr[i]);
   }
 
   linked_list_foreach(thread_list, join_threads);
