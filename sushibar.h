@@ -31,8 +31,8 @@
 #include <stdlib.h>
 
 typedef struct {
-  volatile size_t eating;
-  volatile size_t waiting;
+  size_t eating;
+  size_t waiting;
 
   char   must_wait;
 
