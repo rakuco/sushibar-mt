@@ -101,14 +101,15 @@ void *sushibar_run(void *data)
   sleep(1);
 
   if (sushi->must_wait) {
+    printf("%02u: Damn! All seats are taken. Waiting with %u threads.\n", id, sushi->waiting);
     sushi->waiting++;
     sem_post(sushi->mutex);
     sem_wait(sushi->block);
     sushi->waiting--;
   }
 
-  sushi->eating++;
   printf("%02u: One more eater!\n", id);
+  sushi->eating++;
   sushi->must_wait = (sushi->eating == 5);
 
   if ((sushi->waiting) && (!sushi->must_wait))
