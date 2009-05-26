@@ -118,6 +118,7 @@ void *sushibar_run(void *data)
 
   /* eat sushi */
   printf("%02u: Eating sushi. Eaters: %u. Waiting: %u.\n", id, sushi->eating, sushi->waiting);
+  sleep(1);
 
   sem_wait(sushi->mutex);
   sushi->eating--;
