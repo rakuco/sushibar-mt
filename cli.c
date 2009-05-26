@@ -24,40 +24,35 @@
  */
 
 #include "cli.h"
-#include "mem.h"
-#include "sushibar.h"
-
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
+static const char *const usage_message =
+  "MC514 - Lab3\n"
+  "Raphael Kubo da Costa, RA 072201\n"
+  "\n"
+  "Usage: sushibar <NUMTHREADS>\n"
+  "\n"
+  "  NUMTHREADS is the number of threads the program must create\n";
+
+size_t cli_get_thread_count(int argc, char *argv[])
 {
-  size_t i, numthreads;
-  SushiBar *sushi;
-  ThreadInformation *thr;
+  char *error;
+  long count;
 
-  numthreads = cli_get_thread_count(argc, argv);
-  if (!numthreads) {
-    cli_show_usage();
-    exit(2);
+  if (argc != CLI_ARGC)
+    return 0;
+
+  count = strtol(argv[1], &error, 10);
+  if ((*error != '\0') || (count <= 0)) {
+    fprintf(stderr, "Error: invalid thread number.\n");
+    return 0;
   }
 
-  thr = MEM_ALLOC_N(ThreadInformation, numthreads);
-  sushi = sushibar_new();
+  return (size_t)count;
+}
 
-  for (i = 0; i < numthreads; ++i) {
-    thr[i].id = i;
-    thr[i].sushibar = sushi;
-    pthread_create(&thr[i].thread, NULL, sushibar_run, &thr[i]);
-  }
-
-  for (i = 0; i < numthreads; ++i) {
-    pthread_join(thr[i].thread, NULL);
-  }
-
-  sushibar_free(sushi);
-  free(thr);
-
-  return 0;
+void cli_show_usage(void)
+{
+  fprintf(stderr, "%s", usage_message);
 }

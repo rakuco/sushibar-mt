@@ -3,7 +3,7 @@ CFLAGS=-Wall -g -ansi -pedantic
 LDFLAGS=-pthread
 
 OUTPUT=sushibar
-SRC=main.c mem.c sushibar.c
+SRC=cli.c main.c mem.c sushibar.c
 
 DOXYGEN=doxygen
 DOXYCONF=doxygen.conf

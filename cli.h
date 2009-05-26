@@ -23,41 +23,24 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cli.h"
-#include "mem.h"
-#include "sushibar.h"
+#ifndef CLI_H
+#define CLI_H
 
-#include <pthread.h>
-#include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
-{
-  size_t i, numthreads;
-  SushiBar *sushi;
-  ThreadInformation *thr;
+#define CLI_ARGC 2 /**< The number of arguments the command line must have */
 
-  numthreads = cli_get_thread_count(argc, argv);
-  if (!numthreads) {
-    cli_show_usage();
-    exit(2);
-  }
+/**
+ * Parses the command line and returns the number of threads to be created.
+ *
+ * @retval 0 Invalid arguments were passed.
+ * @retval N The number of threads that must be created.
+ */
+size_t cli_get_thread_count(int argc, char *argv[]);
 
-  thr = MEM_ALLOC_N(ThreadInformation, numthreads);
-  sushi = sushibar_new();
+/**
+ * Displays a usage message.
+ */
+void   cli_show_usage(void);
 
-  for (i = 0; i < numthreads; ++i) {
-    thr[i].id = i;
-    thr[i].sushibar = sushi;
-    pthread_create(&thr[i].thread, NULL, sushibar_run, &thr[i]);
-  }
-
-  for (i = 0; i < numthreads; ++i) {
-    pthread_join(thr[i].thread, NULL);
-  }
-
-  sushibar_free(sushi);
-  free(thr);
-
-  return 0;
-}
+#endif
