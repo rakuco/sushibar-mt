@@ -1,2 +1,1 @@
-+ Move ThreadInformation to its own file.
 + Make the number of threads be specified via command line.
