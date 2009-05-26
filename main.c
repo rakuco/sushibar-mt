@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
   sushi = sushibar_new();
 
   for (i = 0; i < numthreads; ++i) {
-    thr[i].id = i;
+    thr[i].id = i + 1;
     thr[i].sushibar = sushi;
     pthread_create(&thr[i].thread, NULL, sushibar_run, &thr[i]);
   }
