@@ -1,0 +1,47 @@
+MC514 - 2009s1
+Raphael Kubo da Costa - RA 072201
+Projeto 3 - Grupo 3
+=================================
+
+1. Overview
+-----------
+Este projeto implementa o problema do Sushi Bar proposto por Kenneth Reek e descrito por Allen B. Downey em The Little Book on Semaphores.
+
+O código está licenciado sob a licença BSD e está disponível em <http://github.com/rakuco/sushibar-mt>.
+
+2. Arquivos
+-----------
+Além do Makefile e deste README, o projeto possui os seguintes arquivos:
+
+  * COPYING: Licença BSD usada pelo programa.
+
+  * cli.{c,h}: Manipulação da linha de comando, com interpretação do número
+               de threads que devem ser utilizadas.
+
+  * main.c: Boilerplate code para criação e execução das threads no algoritmo.
+
+  * mem.{c,h}: Gerenciamento de memória.
+
+  * sushibar.{c,h}: Implementação do algoritmo principal, além de funções
+                    auxiliares e uma estrutura para identificação das threads.
+
+3. Execução
+-----------
+$ make
+$ ./sushibar <NUMTHREADS>
+
+Onde NUMTHREADS é o número de threads que serão executadas.
+
+4. Funcionamento
+----------------
+Foi escolhida a implementação número 2 do algoritmo presente no e-book.
+
+Tirando as muitas linhas de código necessárias apenas para boilerplate code em C para criação e gerenciamento das threads, o algoritmo em si é praticamente uma transcrição da versão em Python apresentada no livro.
+
+Para o controle de concorrência, foram utilizados semáforos (sem_t) em vez de mutexes e variáveis de condição. Em última análise, foram utilizados os dois métodos: implementaçõe de semáforos costumam utilizar mutexes e variáveis de condição. Um exemplo de implementação pode ser encontrado no código do NetBSD em <http://cvsweb.netbsd.org/bsdweb.cgi/src/lib/libpthread/sem.c?rev=1.21&content-type=text/x-cvsweb-markup&only_with_tag=MAIN>.
+
+O algoritmo usa uma abordagem um tanto incomum com relação à concorrência de threads, uma vez que uma thread nem sempre libera o semáforo/mutex utilizado anteriormente; às vezes, o controle é passado para outra thread, que estava parada devido a outro semáforo/mutex e é então acordada e tem a responsabilidade de liberar o semáforo da thread inicial ou realizar o mesmo e acordar outra thread. O autor do livro chama técnica de "passar o bastão".
+
+De fato, quando a última thread atualmente comendo termina sua refeição é feita uma checagem e, caso haja threads esperando para se sentar, o semáforo 'block' é liberado em vez do semáforo 'mutex'.
+
+O funcionamento do programa é mostrado através de mensagens no terminal que exibem os diversos estados pelos quais cada thread em execução está passando. Sempre que já existem 5 threads "comendo" as outras esperam. Os comandos sleep foram inseridos apenas para aumentar a probabilidade de uma thread passar o controle para outra durante a execução.
