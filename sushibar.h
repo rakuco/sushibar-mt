@@ -30,26 +30,53 @@
 #include <semaphore.h>
 #include <stdlib.h>
 
+/**
+ * Functions and structures related to the algorithm implementation.
+ *
+ * @author Raphael Kubo da Costa <kubito@gmail.com>
+ */
+
+/**
+ * Structure representing the sushi bar.
+ *
+ * This should actually be a singleton.
+ */
 typedef struct {
-  size_t eating;
-  size_t waiting;
+  size_t eating;    /**< How many people are currently eating. */
+  size_t waiting;   /**< How many people are currently waiting. */
 
-  char   must_wait;
+  char   must_wait; /**< Flag to indicate if all seats are taken. */
 
-  sem_t *mutex;
-  sem_t *block;
+  sem_t *mutex;     /**< Data protection semaphore. */
+  sem_t *block;     /**< Waiting semaphore used when all seats are taken. */
 } SushiBar;
 
+/**
+ * Structure with information on each running thread.
+ */
 typedef struct {
-  size_t id;
-  SushiBar *sushibar;
-  pthread_t thread;
+  size_t id;          /**< Thread ID. */
+  SushiBar *sushibar; /**< The SushiBar instance. */
+  pthread_t thread;   /**< A pthread_t instance. */
 } ThreadInformation;
 
+/**
+ * Frees memory allocated for a SushiBar.
+ *
+ * @param sushi The SushiBar instance to free.
+ */
 void sushibar_free(SushiBar *sushi);
 
+/**
+ * Creates a new SushiBar.
+ */
 SushiBar *sushibar_new(void);
 
+/**
+ * Implementation of the algorithm.
+ *
+ * @param data A @p ThreadInformation instance.
+ */
 void *sushibar_run(void *data);
 
 #endif
