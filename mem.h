@@ -29,8 +29,9 @@
 #include <stdlib.h>
 
 /**
- * Wrapper over MEM_ALLOC_N. Equivalent to allocating
- * memory for 1 entry of type /type/.
+ * Wrapper over MEM_ALLOC_N.
+ *
+ * Equivalent to allocating memory for 1 entry of type @p type.
  */
 #define MEM_ALLOC(type) (MEM_ALLOC_N(type, 1))
 
@@ -40,8 +41,9 @@
 #define MEM_ALLOC_N(type, numelem) ((type*)__memAllocate(numelem, sizeof(type)))
 
 /**
- * This function should not be called directly. It's a wrapper
- * over calloc.
+ * This function should not be called directly.
+ *
+ * It's a wrapper over calloc.
  * If memory can't be properly allocated, it displays an error
  * message and exits the program.
  *
