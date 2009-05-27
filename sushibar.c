@@ -93,22 +93,24 @@ void *sushibar_run(void *data)
   assert(sushi->block);
   assert(sushi->mutex);
 
-  printf("%02u: Entering the main function.\n", id);
+  printf("%02u: Entering the sushi bar!\n", id);
 
   sem_wait(sushi->mutex);
 
-  printf("%02u: Creating thread.\n", id);
+  printf("%02u: Trying to take a seat.\n", id);
   sleep(1);
 
   if (sushi->must_wait) {
-    printf("%02u: Damn! All seats are taken. Waiting with %u threads.\n", id, sushi->waiting);
+    printf("%02u: Damn! All seats are taken. Waiting with %u other threads.\n", id, sushi->waiting);
+
     sushi->waiting++;
     sem_post(sushi->mutex);
     sem_wait(sushi->block);
     sushi->waiting--;
   }
 
-  printf("%02u: One more eater!\n", id);
+  printf("%02u: Preparing to eat.\n", id);
+
   sushi->eating++;
   sushi->must_wait = (sushi->eating == 5);
 
@@ -132,7 +134,7 @@ void *sushibar_run(void *data)
   else
     sem_post(sushi->mutex);
 
-  printf("%02u: Finished eating.\n", id);
+  printf("%02u: Finished eating. Burp! Leaving the sushi bar.\n", id);
   sleep(1);
 
   return NULL;
