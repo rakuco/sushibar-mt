@@ -31,15 +31,11 @@
 #include <stdlib.h>
 
 /**
- * Functions and structures related to the algorithm implementation.
- *
- * @author Raphael Kubo da Costa <kubito@gmail.com>
- */
-
-/**
  * Structure representing the sushi bar.
  *
  * This should actually be a singleton.
+ *
+ * @author Raphael Kubo da Costa <kubito@gmail.com>
  */
 typedef struct {
   size_t eating;    /**< How many people are currently eating. */
@@ -53,6 +49,8 @@ typedef struct {
 
 /**
  * Structure with information on each running thread.
+ *
+ * @author Raphael Kubo da Costa <kubito@gmail.com>
  */
 typedef struct {
   size_t id;          /**< Thread ID. */
